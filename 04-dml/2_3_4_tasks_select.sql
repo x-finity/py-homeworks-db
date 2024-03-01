@@ -52,3 +52,34 @@ SELECT c.title, a.name
 	WHERE a."name" = 'Queen';
 
 /* 4 task */
+SELECT al.title
+	FROM public.albums al
+	JOIN artistsalbum aa ON al.id = aa.album_id 
+	JOIN artists a ON aa.artist_id = a.id 
+	JOIN artistsgenre ag ON a.id = ag.artist_id 
+	JOIN genres g ON ag.genre_id = g.id 
+	GROUP BY al.title
+	HAVING COUNT(g.name) > 1
+	ORDER BY al.title;
+
+SELECT t.title
+	FROM public.tracks t
+	JOIN collectionstracks ct ON t.id = ct.track_id 
+	JOIN collections c ON ct.collection_id = c.id 
+	WHERE t.id NOT IN (SELECT ct.track_id); /* не работает */
+
+SELECT a.name
+	FROM public.artists a
+	JOIN artistsalbum aa ON a.id = aa.artist_id 
+	JOIN albums al ON aa.album_id = al.id 
+	JOIN tracks t ON al.id = t.album_id 
+	WHERE t.duration = (SELECT MIN(duration) FROM tracks);
+
+SELECT al.title, COUNT(t.title), MIN(t.title)
+	FROM public.albums al
+	JOIN tracks t ON al.id = t.album_id
+	GROUP BY al.title
+	HAVING COUNT(t.title) = MIN(SELECT COUNT(t.title)
+		FROM public.albums al
+		JOIN tracks t ON al.id = t.album_id
+		GROUP BY al.title); /* не работает */

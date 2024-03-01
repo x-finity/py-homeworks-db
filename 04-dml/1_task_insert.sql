@@ -34,7 +34,10 @@ INSERT INTO public.artistsalbum VALUES
 	(3,3),
 	(4,4),
 	(5,5),
-	(6,6);
+	(6,6),
+	(2,7),
+	(5,7),
+	(3,7);
 
 INSERT INTO public.tracks (duration, title, album_id) VALUES
 	(166,'Good Times Bad Times',1),
@@ -49,7 +52,10 @@ INSERT INTO public.tracks (duration, title, album_id) VALUES
 	(290,'Without Me',5),
 	(105,'The Genesis',6),
 	(291,'The World Is Yours',6),
-	(322,'Demo my track',6);
+	(322,'Demo my track',6),
+	(240,'Queen demo track',7),
+	(150,'Eminem demo track',7),
+	(301,'Lady Gaga demo track',7);
 
 INSERT INTO public.collections (title, release_year) VALUES
 	('Rock collection', 2020),
