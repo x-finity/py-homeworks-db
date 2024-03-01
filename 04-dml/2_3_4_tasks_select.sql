@@ -75,7 +75,7 @@ SELECT a.name
 	JOIN tracks t ON al.id = t.album_id 
 	WHERE t.duration = (SELECT MIN(duration) FROM tracks);
 
-SELECT al.title, COUNT(t.title), MIN(t.title)
+SELECT al.title, COUNT(t.title)
 	FROM public.albums al
 	JOIN tracks t ON al.id = t.album_id
 	GROUP BY al.title
