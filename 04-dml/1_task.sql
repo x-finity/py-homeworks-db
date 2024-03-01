@@ -47,7 +47,7 @@ INSERT INTO public.tracks (duration, title, album_id) VALUES
 	(252,'Business',5),
 	(290,'Without Me',5),
 	(105,'The Genesis',6),
-	(291,'The World Is Yours',6)
+	(291,'The World Is Yours',6),
     (322,'Demo my track',6);
 
 INSERT INTO public.collections (title, release_year) VALUES
