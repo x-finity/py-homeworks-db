@@ -64,8 +64,8 @@ SELECT al.title
 
 SELECT t.title
 	FROM public.tracks t
-	JOIN collectionstracks ct ON t.id = ct.track_id 
-	WHERE t.id NOT IN (SELECT ct.track_id); /* не работает */
+	LEFT JOIN collectionstracks ct ON t.id = ct.track_id 
+	WHERE ct.track_id IS null;
 
 SELECT a.name
 	FROM public.artists a
@@ -74,11 +74,12 @@ SELECT a.name
 	JOIN tracks t ON al.id = t.album_id 
 	WHERE t.duration = (SELECT MIN(duration) FROM tracks);
 
-SELECT al.title, COUNT(t.title)
+SELECT al.title, COUNT(*)
 	FROM public.albums al
 	JOIN tracks t ON al.id = t.album_id
 	GROUP BY al.title
-	HAVING COUNT(t.title) = MIN(SELECT COUNT(t.title)
+	HAVING COUNT(*) = (SELECT COUNT(*)
 		FROM public.albums al
 		JOIN tracks t ON al.id = t.album_id
-		GROUP BY al.title); /* не работает */
+		GROUP BY al.title
+		ORDER BY COUNT(*) LIMIT 1);
