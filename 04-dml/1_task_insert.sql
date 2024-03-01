@@ -40,7 +40,7 @@ INSERT INTO public.artistsalbum VALUES
 	(3,7);
 
 INSERT INTO public.tracks (duration, title, album_id) VALUES
-	(166,'Good Times Bad Times',1),
+	(105,'Good Times Bad Times',1),
 	(388,'You Shook Me',1),
 	(227,'Keep Yourself Alive',2),
 	(343,'Great King Rat',2),
