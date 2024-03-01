@@ -65,7 +65,6 @@ SELECT al.title
 SELECT t.title
 	FROM public.tracks t
 	JOIN collectionstracks ct ON t.id = ct.track_id 
-	JOIN collections c ON ct.collection_id = c.id 
 	WHERE t.id NOT IN (SELECT ct.track_id); /* не работает */
 
 SELECT a.name
