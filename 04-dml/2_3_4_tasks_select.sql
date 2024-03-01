@@ -1,3 +1,25 @@
+/* 2 task */
+SELECT title, duration 
+	FROM public.tracks
+	WHERE duration = (SELECT max(duration) FROM public.tracks);
+
+SELECT title
+	FROM public.tracks
+	WHERE duration >= 230;
+
+SELECT title
+	FROM public.collections
+	WHERE release_year BETWEEN 2018 AND 2020;
+
+SELECT "name"
+	FROM public.artists
+	WHERE "name" NOT LIKE '% %';
+
+SELECT title 
+	FROM public.tracks
+	WHERE (title LIKE '%my%' OR title LIKE '%мой%');
+
+/* 3 task */
 SELECT COUNT(artist_id), "name"
 	FROM public.artistsgenre ag
 	LEFT JOIN genres g ON ag.genre_id = g.id 
@@ -28,3 +50,5 @@ SELECT c.title, a.name
 	JOIN artistsalbum aa ON aa.album_id = al.id
 	JOIN artists a ON aa.artist_id = a.id
 	WHERE a."name" = 'Queen';
+
+/* 4 task */

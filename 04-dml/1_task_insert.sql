@@ -17,7 +17,8 @@ INSERT INTO public.albums (title , release_year) VALUES
 	('Artpop', 2013),
 	('Reputation', 2017),
 	('The Eminem Show', 2002),
-	('Illmatic', 1994);
+	('Illmatic', 1994),
+	('Mix album', 2020);
 
 INSERT INTO public.artistsgenre VALUES
 	(1,1),
