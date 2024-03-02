@@ -22,7 +22,7 @@ SELECT "name"
 -- 2.5
 SELECT title 
 	FROM public.tracks
-	WHERE (title LIKE '%my%' OR title LIKE '%мой%');
+	WHERE string_to_array(lower(title), ' ') && ARRAY['my', 'мой'];
 
 /* 3 task */
 -- 3.1
@@ -32,11 +32,10 @@ SELECT COUNT(artist_id), "name"
 	GROUP BY "name";
 
 -- 3.2
-SELECT COUNT(*), release_year
+SELECT COUNT(*)
 	FROM public.tracks t 
-	JOIN albums a ON t.album_id = a.id
-	WHERE release_year BETWEEN 2019 AND 2020
-	GROUP BY release_year;
+	JOIN albums al ON t.album_id = al.id
+	WHERE al.release_year BETWEEN 2019 AND 2020;
 
 -- 3.3
 SELECT AVG(duration), al.title
@@ -45,11 +44,14 @@ SELECT AVG(duration), al.title
 	GROUP BY al.title;
 
 -- 3.4
-SELECT a.name, release_year
-	FROM public.artistsalbum aa
-	JOIN artists a ON aa.artist_id = a.id
-	JOIN albums al ON aa.album_id = al.id
-	WHERE release_year != 2020;
+SELECT a.name
+	FROM public.artists a
+	WHERE a.name NOT IN (
+		SELECT a.name
+		FROM public.artistsalbum aa
+		JOIN artists a ON aa.artist_id = a.id
+		JOIN albums al ON aa.album_id = al.id
+		WHERE release_year = 2020);
 
 -- 3.5
 SELECT c.title, a.name
@@ -63,14 +65,13 @@ SELECT c.title, a.name
 
 /* 4 task */
 -- 4.1
-SELECT al.title
+SELECT DISTINCT al.title
 	FROM public.albums al
 	JOIN artistsalbum aa ON al.id = aa.album_id 
 	JOIN artists a ON aa.artist_id = a.id 
-	JOIN artistsgenre ag ON a.id = ag.artist_id 
-	JOIN genres g ON ag.genre_id = g.id 
+	JOIN artistsgenre ag ON a.id = ag.artist_id  
 	GROUP BY al.title
-	HAVING COUNT(g.name) > 1
+	HAVING COUNT(ag.genre_id) > 1
 	ORDER BY al.title;
 
 -- 4.2
