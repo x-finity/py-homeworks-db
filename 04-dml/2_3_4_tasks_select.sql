@@ -7,7 +7,7 @@ SELECT title, duration
 -- 2.2
 SELECT title
 	FROM public.tracks
-	WHERE duration >= 230;
+	WHERE duration >= 210;
 
 -- 2.3
 SELECT title
@@ -70,7 +70,7 @@ SELECT DISTINCT al.title
 	JOIN artistsalbum aa ON al.id = aa.album_id 
 	JOIN artists a ON aa.artist_id = a.id 
 	JOIN artistsgenre ag ON a.id = ag.artist_id  
-	GROUP BY al.title
+	GROUP BY al.title, ag.artist_id
 	HAVING COUNT(ag.genre_id) > 1
 	ORDER BY al.title;
 
