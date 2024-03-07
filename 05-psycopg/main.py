@@ -6,7 +6,7 @@ if __name__ == "__main__":
     config = xfdb.load_config('config.json')
     conn = psycopg2.connect(database=config['database'], user=config['user'], password=config['password'])
 
-    xfdb.create_client_db(conn, cur)
+    xfdb.create_client_db(conn)
     xfdb.add_new_client(conn, 'NoName', 'test@domain.lol', '123456789')
     xfdb.add_new_client(conn, 'NoName2', 'test2@domain.lol', '234567890')
     xfdb.add_new_client(conn, 'NoName3', 'test3@domain.lol')
