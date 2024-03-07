@@ -1,6 +1,5 @@
 import xf_DB as xfdb
 import psycopg2
-import json
 
 if __name__ == "__main__":
     config = xfdb.load_config('config.json')

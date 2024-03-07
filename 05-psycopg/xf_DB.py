@@ -9,19 +9,19 @@ def load_config(filename):
 def create_client_db(connection):
     with connection.cursor() as cursor:
         cursor.execute(''' CREATE TABLE IF NOT EXISTS client(
-            id SERIAL PRIMARY KEY,
+            client_id SERIAL PRIMARY KEY,
             name VARCHAR(40) NOT NULL,
             email VARCHAR(40) NOT NULL UNIQUE)''')
         cursor.execute(''' CREATE TABLE IF NOT EXISTS phones(
-            id SERIAL PRIMARY KEY,
-            client_id INTEGER REFERENCES client(id),
+            phone_id SERIAL PRIMARY KEY,
+            client_id INTEGER REFERENCES client(client_id),
             phone VARCHAR(40) UNIQUE)''')
     connection.commit()
 
 def add_new_client(connection, name, email, phone=None):
     with connection.cursor() as cursor:
         try:
-            cursor.execute('''INSERT INTO client(name, email) VALUES (%s, %s) RETURNING id''', (name, email))
+            cursor.execute('''INSERT INTO client(name, email) VALUES (%s, %s) RETURNING client_id''', (name, email))
         except psycopg2.errors.UniqueViolation:
             connection.rollback()
             print(f'Client "{name}" already exists')
@@ -34,7 +34,7 @@ def add_new_client(connection, name, email, phone=None):
 
 def add_new_phone(connection, client_name, phone):
     with connection.cursor() as cursor:
-        cursor.execute('''SELECT id FROM client WHERE name = %s''', (client_name,))
+        cursor.execute('''SELECT client_id FROM client WHERE name = %s''', (client_name,))
         client_id = cursor.fetchone()[0]
         try:
             cursor.execute('''INSERT INTO phones(client_id, phone) VALUES (%s, %s)''', (client_id, phone))
@@ -49,19 +49,19 @@ def modify_client(connection, client_name, name=None, email=None, phone=None):
         if not name and not email and not phone:
             print('modify client: No input data')
             return
-        cursor.execute('''SELECT id FROM client WHERE name = %s''', (client_name,))
+        cursor.execute('''SELECT clientid FROM client WHERE name = %s''', (client_name,))
         client_id = cursor.fetchone()[0]
         if name:
-            cursor.execute('''UPDATE client SET name = %s WHERE id = %s''', (name, client_id))
+            cursor.execute('''UPDATE client SET name = %s WHERE client_id = %s''', (name, client_id))
         if email:
-            cursor.execute('''UPDATE client SET email = %s WHERE id = %s''', (email, client_id))
+            cursor.execute('''UPDATE client SET email = %s WHERE client_id = %s''', (email, client_id))
         if phone:
             cursor.execute('''UPDATE phones SET phone = %s WHERE client_id = %s''', (phone, client_id))
     connection.commit()
 
 def delete_phone(connection, client_name, phone):
     with connection.cursor() as cursor:
-        cursor.execute('''SELECT id FROM client WHERE name = %s''', (client_name,))
+        cursor.execute('''SELECT client_id FROM client WHERE name = %s''', (client_name,))
         client_id = cursor.fetchone()[0]
         cursor.execute('''DELETE FROM phones WHERE client_id = %s AND phone = %s''', (client_id, phone))
     connection.commit()
@@ -69,7 +69,7 @@ def delete_phone(connection, client_name, phone):
 def delete_user(connection, client_name):
     with connection.cursor() as cursor:
         cursor.execute('''DELETE FROM phones WHERE client_id =
-            (SELECT id FROM client WHERE name = %s)''', (client_name,))
+            (SELECT client_id FROM client WHERE name = %s)''', (client_name,))
         cursor.execute('''DELETE FROM client WHERE name = %s''', (client_name,))
     connection.commit()
 
@@ -90,19 +90,19 @@ def find_client(connection, client_name=None, email=None, phone=None):
         if client_name:
             cursor.execute('''SELECT name, email FROM client WHERE name = %s''', (client_name,))
             client_name_n_email = cursor.fetchone()
-            cursor.execute('''SELECT phone FROM phones WHERE client_id = (SELECT id FROM client WHERE name = %s)''', (client_name,))
+            cursor.execute('''SELECT phone FROM phones WHERE client_id = (SELECT client_id FROM client WHERE name = %s)''', (client_name,))
             phone = cursor.fetchall()
             print_result(client_name, client_name_n_email, phone)
             return
         if email:
             cursor.execute('''SELECT name, email FROM client WHERE email = %s''', (email,))
             client_name_n_email = cursor.fetchone()
-            cursor.execute('''SELECT phone FROM phones WHERE client_id = (SELECT id FROM client WHERE email = %s)''', (email,))
+            cursor.execute('''SELECT phone FROM phones WHERE client_id = (SELECT client_id FROM client WHERE email = %s)''', (email,))
             phone = cursor.fetchall()
             print_result(email, client_name_n_email, phone)
             return
         if phone:
-            cursor.execute('''SELECT name, email FROM client WHERE id IN
+            cursor.execute('''SELECT name, email FROM client WHERE client_id IN
                 (SELECT client_id FROM phones WHERE phone = %s)''', (phone,))
             client_name_n_email = cursor.fetchone()
             cursor.execute('''SELECT phone FROM phones WHERE client_id = %s''', (client_name_n_email[0],))
