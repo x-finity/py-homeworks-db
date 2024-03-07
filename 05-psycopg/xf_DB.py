@@ -10,7 +10,6 @@ def create_client_db(connection, cursor):
     cursor.execute(''' CREATE TABLE IF NOT EXISTS client(
         id SERIAL PRIMARY KEY,
         name VARCHAR(40) NOT NULL,
-        last_name VARCHAR(40) NOT NULL,
         email VARCHAR(40) NOT NULL UNIQUE)''')
     cursor.execute(''' CREATE TABLE IF NOT EXISTS phones(
         id SERIAL PRIMARY KEY,
