@@ -1,2 +1,3 @@
 05-psycopg/test.py
 05-psycopg/config.json
+05-psycopg/__pycache__
