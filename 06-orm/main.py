@@ -13,3 +13,5 @@ xform.create_db(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+
+session.commit()

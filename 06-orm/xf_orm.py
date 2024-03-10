@@ -51,3 +51,6 @@ class Publisher(Base):
     id_publisher = sq.Column(sq.Integer, sq.ForeignKey('book.id_publisher'), primary_key=True)
     name = sq.Column(sq.String(length=40), nullable=False)
     book = relationship(Book, backref='publisher')
+
+def fill_db(session):
+    pass
