@@ -2,3 +2,4 @@
 05-psycopg/config.json
 05-psycopg/__pycache__
 06-orm/config.json
+06-orm/__pycache__

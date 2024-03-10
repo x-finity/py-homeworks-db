@@ -10,3 +10,6 @@ engine = sq.create_engine(DSN)
 
 xform.create_db(engine)
 
+Session = sessionmaker(bind=engine)
+session = Session()
+
