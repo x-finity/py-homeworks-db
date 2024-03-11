@@ -13,6 +13,8 @@ xform.create_db(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-xform.fill_db(session)
+# xform.fill_db(session)
+
+xform.publishers(session)
 
 session.commit()

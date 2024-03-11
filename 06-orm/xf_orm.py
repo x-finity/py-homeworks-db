@@ -1,4 +1,6 @@
 import json
+import psycopg2
+import sqlalchemy
 import sqlalchemy as sq
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
@@ -20,6 +22,8 @@ def create_db(engine):
 
 class Publisher(Base):
     __tablename__ = 'publisher'
+    def __str__(self):
+        return self.name
     id_publisher = sq.Column(sq.Integer, primary_key=True)
     name = sq.Column(sq.String(length=40), nullable=False)
 
@@ -33,7 +37,7 @@ class Book(Base):
 class Shop(Base):
     __tablename__ = 'shop'
     id_shop = sq.Column(sq.Integer, primary_key=True)
-    name = sq.Column(sq.String(length=40), nullable=False)
+    name = sq.Column(sq.String(length=40), nullable=False, unique=True)
 
 class Stock(Base):
     __tablename__ = 'stock'
@@ -47,7 +51,7 @@ class Stock(Base):
 class Sale(Base):
     __tablename__ = 'sale'
     id_sale = sq.Column(sq.Integer, primary_key=True)
-    price = sq.Column(sq.Integer, nullable=False)
+    price = sq.Column(sq.Float, nullable=False)
     date_sale = sq.Column(sq.Date, nullable=False)
     id_stock = sq.Column(sq.Integer, sq.ForeignKey('stock.id_stock'), nullable=False)
     count = sq.Column(sq.Integer, nullable=False)
@@ -60,25 +64,36 @@ def fill_db(session, file = 'tests_data.json'):
         data = json.loads(f.read())
 
     for item in data:
-        # id_name=f'id_{item["model"]}'
+        id_name=f'id_{item["model"]}'
         # print(id_name)
         # item.update({id_name: item.pop('pk')})
 
-        # dict = {id_name: y for x, y in item.items() if x == 'pk'}
+        dict = {id_name: y for x, y in item.items() if x == 'pk'}
         # print(dict)
         # print(item)
         # session.add(eval(item['model'].capitalize())(eval(id_name)=item['pk'], **item['fields']))
-        session.add(eval(item['model'].capitalize())({f'id_{item["model"]}':item['pk']}, **item['fields']))
+        # session.add(eval(item['model'].capitalize())({f'id_{item["model"]}':item['pk']}, **item['fields']))
         # session.add(eval(item['model'].capitalize())(id_name=item['pk'], **item['fields']))
-        # session.add(eval(item['model'].capitalize())(**dict, **item['fields']))
+        try:
+            session.add(eval(item['model'].capitalize())(**dict, **item['fields']))
+            session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            session.rollback()
+            print(f'Item {item["pk"]} in {item["model"]} already exists')
+            continue
         
-        if item['model'] == 'stock':
-            session.add(Stock(id_stock=item['pk']), **item['fields'])
-        elif item['model'] == 'sale':
-            session.add(Sale(id_sale=item['pk']), **item['fields'])
-        elif item['model'] == 'shop':
-            session.add(Shop(id_shop=item['pk'], **item['fields']))
-        elif item['model'] == 'book':
-            session.add(Book(id_book=item['pk'], **item['fields']))
-        elif item['model'] == 'publisher':
-            session.add(Publisher(id_publisher=item['pk'], **item['fields']))
+        # if item['model'] == 'stock':
+        #     session.add(Stock(id_stock=item['pk'], **item['fields']))
+        # elif item['model'] == 'sale':
+        #     session.add(Sale(id_sale=item['pk'], **item['fields']))
+        # elif item['model'] == 'shop':
+        #     session.add(Shop(id_shop=item['pk'], **item['fields']))
+        # elif item['model'] == 'book':
+        #     session.add(Book(id_book=item['pk'], **item['fields']))
+        # elif item['model'] == 'publisher':
+        #     session.add(Publisher(id_publisher=item['pk'], **item['fields']))
+
+def publishers(session):
+    for publisher in session.query(Publisher).join(Book).join(Stock).join(Shop).all():
+        print(publisher)
+    return
