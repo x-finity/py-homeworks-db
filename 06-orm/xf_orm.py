@@ -94,6 +94,12 @@ def fill_db(session, file = 'tests_data.json'):
         #     session.add(Publisher(id_publisher=item['pk'], **item['fields']))
 
 def publishers(session):
-    for publisher in session.query(Publisher).join(Book).join(Stock).join(Shop).all():
+    for publisher in session.query(Publisher).all():
         print(f'book: {publisher.book[0].title} | price: {publisher.book[0].stock[0].sale[0].price} | shop: {publisher.book[0].stock[0].shop.name} | sale date: {publisher.book[0].stock[0].sale[0].date_sale}')
+    return
+
+def books(session):
+    for book in session.query(Book).all():
+        print(f'price: {list(x for x in book.stock)}')
+        print(f'book: {book.title} | price: {book.stock[0].sale[0].price} | shop: {book.stock[0].shop.name} | sale date: {book.stock[0].sale[0].date_sale}') # ERROR book.stock[0].sale[0].price IndexError: list index out of range
     return

@@ -15,6 +15,8 @@ session = Session()
 
 # xform.fill_db(session)
 
-xform.publishers(session)
+# xform.publishers(session)
+
+xform.books(session)
 
 session.commit()
