@@ -81,4 +81,4 @@ def fill_db(session, file = 'tests_data.json'):
         # if item['model'] == 'book':
         #     session.add(Book(**item['fields']))
         # if item['model'] == 'publisher':
-        #     session.add(Publisher(**item['fields']))
+        #     session.add(Publisher(**item['fields'])) 
