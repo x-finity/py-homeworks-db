@@ -17,12 +17,32 @@ def load_config(path):
 def create_db(engine):
     Base.metadata.create_all(engine)
 
+
+class Publisher(Base):
+    __tablename__ = 'publisher'
+    id_publisher = sq.Column(sq.Integer, primary_key=True)
+    name = sq.Column(sq.String(length=40), nullable=False)
+
+class Book(Base):
+    __tablename__ = 'book'
+    id_book = sq.Column(sq.Integer, primary_key=True)
+    title = sq.Column(sq.String(length=40), nullable=False)
+    id_publisher = sq.Column(sq.Integer, sq.ForeignKey('publisher.id_publisher'), nullable=False)
+    publisher = relationship(Publisher, backref='book')
+
+class Shop(Base):
+    __tablename__ = 'shop'
+    id_shop = sq.Column(sq.Integer, primary_key=True)
+    name = sq.Column(sq.String(length=40), nullable=False)
+
 class Stock(Base):
     __tablename__ = 'stock'
     id_stock = sq.Column(sq.Integer, primary_key=True)
-    id_book = sq.Column(sq.Integer, nullable=False, unique=True)
-    id_shop = sq.Column(sq.Integer, nullable=False, unique=True)
+    id_book = sq.Column(sq.Integer, sq.ForeignKey('book.id_book'), nullable=False)
+    id_shop = sq.Column(sq.Integer, sq.ForeignKey('shop.id_shop'), nullable=False)
     count = sq.Column(sq.Integer, nullable=False)
+    book = relationship(Book, backref='stock')
+    shop = relationship(Shop, backref='stock')
 
 class Sale(Base):
     __tablename__ = 'sale'
@@ -33,24 +53,32 @@ class Sale(Base):
     count = sq.Column(sq.Integer, nullable=False)
     stock = relationship(Stock, backref='sale')
 
-class Shop(Base):
-    __tablename__ = 'shop'
-    id_shop = sq.Column(sq.Integer, sq.ForeignKey('stock.id_shop'), primary_key=True)
-    name = sq.Column(sq.String(length=40), nullable=False)
-    stock = relationship(Stock, backref='shop')
 
-class Book(Base):
-    __tablename__ = 'book'
-    id_book = sq.Column(sq.Integer, sq.ForeignKey('stock.id_book'), primary_key=True)
-    title = sq.Column(sq.String(length=40), nullable=False)
-    id_publisher = sq.Column(sq.Integer, nullable=False, unique=True)
-    stock = relationship(Stock, backref='book')
 
-class Publisher(Base):
-    __tablename__ = 'publisher'
-    id_publisher = sq.Column(sq.Integer, sq.ForeignKey('book.id_publisher'), primary_key=True)
-    name = sq.Column(sq.String(length=40), nullable=False)
-    book = relationship(Book, backref='publisher')
+def fill_db(session, file = 'tests_data.json'):
+    with open(file) as f:
+        data = json.loads(f.read())
 
-def fill_db(session):
-    pass
+    for item in data:
+        # id_name=f'id_{item["model"]}'
+        # print(id_name)
+        # item.update({id_name: item.pop('pk')})
+
+        # dict = {id_name: y for x, y in item.items() if x == 'pk'}
+        # print(dict)
+        # print(item)
+        # session.add(eval(item['model'].capitalize())(eval(id_name)=item['pk'], **item['fields']))
+        session.add(eval(item['model'].capitalize())({f'id_{item["model"]}':item['pk']}, **item['fields']))
+        # session.add(eval(item['model'].capitalize())(id_name=item['pk'], **item['fields']))
+        # session.add(eval(item['model'].capitalize())(**dict, **item['fields']))
+        
+        # if item['model'] == 'stock':
+        #     session.add(Stock(**item['fields'])
+        # elif item['model'] == 'sale':
+        #     session.add(eval(item['model'].capitalize())(id_sale=item['pk']), **item['fields'])
+        # if item['model'] == 'shop':
+        #     session.add(Shop(**item['fields']))
+        # if item['model'] == 'book':
+        #     session.add(Book(**item['fields']))
+        # if item['model'] == 'publisher':
+        #     session.add(Publisher(**item['fields']))
