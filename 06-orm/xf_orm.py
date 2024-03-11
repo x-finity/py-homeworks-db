@@ -72,13 +72,13 @@ def fill_db(session, file = 'tests_data.json'):
         # session.add(eval(item['model'].capitalize())(id_name=item['pk'], **item['fields']))
         # session.add(eval(item['model'].capitalize())(**dict, **item['fields']))
         
-        # if item['model'] == 'stock':
-        #     session.add(Stock(**item['fields'])
-        # elif item['model'] == 'sale':
-        #     session.add(eval(item['model'].capitalize())(id_sale=item['pk']), **item['fields'])
-        # if item['model'] == 'shop':
-        #     session.add(Shop(**item['fields']))
-        # if item['model'] == 'book':
-        #     session.add(Book(**item['fields']))
-        # if item['model'] == 'publisher':
-        #     session.add(Publisher(**item['fields']))
+        if item['model'] == 'stock':
+            session.add(Stock(id_stock=item['pk']), **item['fields'])
+        elif item['model'] == 'sale':
+            session.add(Sale(id_sale=item['pk']), **item['fields'])
+        elif item['model'] == 'shop':
+            session.add(Shop(id_shop=item['pk'], **item['fields']))
+        elif item['model'] == 'book':
+            session.add(Book(id_book=item['pk'], **item['fields']))
+        elif item['model'] == 'publisher':
+            session.add(Publisher(id_publisher=item['pk'], **item['fields']))
