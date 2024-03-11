@@ -95,5 +95,5 @@ def fill_db(session, file = 'tests_data.json'):
 
 def publishers(session):
     for publisher in session.query(Publisher).join(Book).join(Stock).join(Shop).all():
-        print(publisher)
+        print(f'book: {publisher.book[0].title} | price: {publisher.book[0].stock[0].sale[0].price} | shop: {publisher.book[0].stock[0].shop.name} | sale date: {publisher.book[0].stock[0].sale[0].date_sale}')
     return
