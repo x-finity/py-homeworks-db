@@ -64,7 +64,7 @@ class Sale(Base):
 
 def fill_db(session, file = 'tests_data.json', echo=False):
     with open(file) as f:
-        data = json.loads(f.read())
+        data = json.load(f)
     error_stack = []
     for item in data:
         id_name=f'id_{item["model"]}'
@@ -77,11 +77,6 @@ def fill_db(session, file = 'tests_data.json', echo=False):
             error_stack.append(f'Item {item["pk"]} in {item["model"]} already exists')
             continue
     if echo: print(error_stack)
-
-def publishers(session):
-    for publisher in session.query(Publisher).all():
-        print(f'book: {publisher.book[0].title} | price: {publisher.book[0].stock[0].sale[0].price} | shop: {publisher.book[0].stock[0].shop.name} | sale date: {publisher.book[0].stock[0].sale[0].date_sale}')
-    return
 
 def books_by_publisher(session, publisher):
     q = sq.select(Book.title, Shop.name, Sale.price, Sale.date_sale) \

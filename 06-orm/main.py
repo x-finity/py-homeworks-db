@@ -17,9 +17,9 @@ session = Session()
 xform.fill_db(session, echo=False)
 
 # xform.publishers(session)
+if __name__ == '__main__':
+    publisher = input('Enter publisher name: (Enter for default)')
+    if not publisher: publisher = 'O\u2019Reilly'
 
-publisher = input('Enter publisher name: (Enter for default)')
-if not publisher: publisher = 'O\u2019Reilly'
-
-xform.books_by_publisher(session, publisher)
+    xform.books_by_publisher(session, publisher)
 
