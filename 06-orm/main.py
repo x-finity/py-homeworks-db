@@ -6,17 +6,20 @@ config = xform.load_config('config.json')
 # print(config)
 DSN = f'postgresql://{config["user"]}:{config["password"]}@{config["server"]}:{config["port"]}/{config["database"]}'
 
-engine = sq.create_engine(DSN)
+engine = sq.create_engine(DSN) #, echo=True)
 
 xform.create_db(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# xform.fill_db(session)
+xform.fill_db(session, echo=False)
 
 # xform.publishers(session)
 
-xform.books(session)
+publisher = input('Enter publisher name: (Enter for default)')
+if not publisher: publisher = 'O\u2019Reilly'
+
+xform.books_by_publisher(session, publisher)
 
 session.commit()

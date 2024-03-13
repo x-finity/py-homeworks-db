@@ -59,47 +59,36 @@ class Sale(Base):
 
 
 
-def fill_db(session, file = 'tests_data.json'):
+def fill_db(session, file = 'tests_data.json', echo=False):
     with open(file) as f:
         data = json.loads(f.read())
-
+    error_stack = []
     for item in data:
         id_name=f'id_{item["model"]}'
-        # print(id_name)
-        # item.update({id_name: item.pop('pk')})
-
-        dict = {id_name: y for x, y in item.items() if x == 'pk'}
-        # print(dict)
-        # print(item)
-        # session.add(eval(item['model'].capitalize())(eval(id_name)=item['pk'], **item['fields']))
-        # session.add(eval(item['model'].capitalize())({f'id_{item["model"]}':item['pk']}, **item['fields']))
-        # session.add(eval(item['model'].capitalize())(id_name=item['pk'], **item['fields']))
+        dict = {id_name: item['pk']}  
         try:
             session.add(eval(item['model'].capitalize())(**dict, **item['fields']))
             session.commit()
         except sqlalchemy.exc.IntegrityError:
             session.rollback()
-            print(f'Item {item["pk"]} in {item["model"]} already exists')
+            error_stack.append(f'Item {item["pk"]} in {item["model"]} already exists')
             continue
-        
-        # if item['model'] == 'stock':
-        #     session.add(Stock(id_stock=item['pk'], **item['fields']))
-        # elif item['model'] == 'sale':
-        #     session.add(Sale(id_sale=item['pk'], **item['fields']))
-        # elif item['model'] == 'shop':
-        #     session.add(Shop(id_shop=item['pk'], **item['fields']))
-        # elif item['model'] == 'book':
-        #     session.add(Book(id_book=item['pk'], **item['fields']))
-        # elif item['model'] == 'publisher':
-        #     session.add(Publisher(id_publisher=item['pk'], **item['fields']))
+    if echo: print(error_stack)
 
 def publishers(session):
     for publisher in session.query(Publisher).all():
         print(f'book: {publisher.book[0].title} | price: {publisher.book[0].stock[0].sale[0].price} | shop: {publisher.book[0].stock[0].shop.name} | sale date: {publisher.book[0].stock[0].sale[0].date_sale}')
     return
 
-def books(session):
-    for book in session.query(Book).all():
-        print(f'price: {list(x for x in book.stock)}')
-        print(f'book: {book.title} | price: {book.stock[0].sale[0].price} | shop: {book.stock[0].shop.name} | sale date: {book.stock[0].sale[0].date_sale}') # ERROR book.stock[0].sale[0].price IndexError: list index out of range
+def books_by_publisher(session, publisher):
+    q = sq.select(Book.title, Shop.name, Sale.price, Sale.date_sale) \
+        .select_from(Book) \
+        .join(Publisher, Publisher.id_publisher == Book.id_publisher) \
+        .join(Stock, Stock.id_book == Book.id_book) \
+        .join(Shop, Shop.id_shop == Stock.id_shop) \
+        .join(Sale, Sale.id_stock == Stock.id_stock) \
+            .where(Publisher.name == publisher)
+
+    for book in session.execute(q).all():
+        print(f'book: {book.title:<40}| shop: {book.name:<10}| price: {book.price:<6}| sale date: {book.date_sale}')
     return
