@@ -16,6 +16,9 @@ def load_config(path):
         config.setdefault('port', 5432)
     return config
 
+def dsn(config):
+    return f'postgresql://{config["user"]}:{config["password"]}@{config["server"]}:{config["port"]}/{config["database"]}'
+
 def create_db(engine):
     Base.metadata.create_all(engine)
 

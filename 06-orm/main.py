@@ -4,7 +4,8 @@ import xf_orm as xform
 
 config = xform.load_config('config.json')
 # print(config)
-DSN = f'postgresql://{config["user"]}:{config["password"]}@{config["server"]}:{config["port"]}/{config["database"]}'
+# DSN = f'postgresql://{config["user"]}:{config["password"]}@{config["server"]}:{config["port"]}/{config["database"]}'
+DSN = xform.dsn(config)
 
 engine = sq.create_engine(DSN) #, echo=True)
 
@@ -22,4 +23,3 @@ if not publisher: publisher = 'O\u2019Reilly'
 
 xform.books_by_publisher(session, publisher)
 
-session.commit()
